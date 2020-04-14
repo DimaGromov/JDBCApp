@@ -1,3 +1,4 @@
+import connection.ConnectionController;
 import entity.Product;
 import org.h2.tools.DeleteDbFiles;
 import org.junit.After;
@@ -21,6 +22,7 @@ public class TestClass {
     Connection connection;
     Statement statement;
 
+/*
     @Before
     public void createConnection() throws SQLException {
         try {
@@ -85,5 +87,6 @@ public class TestClass {
         ConnectionController.closeConnection();
         System.out.println("Connection was close.");
     }
+*/
 
 }

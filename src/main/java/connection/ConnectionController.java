@@ -1,16 +1,22 @@
+package connection;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConnectionController {
-    static final String JDBC_DRIVER = "org.h2.Driver";
-    static Connection connection = null;
+    private Connect connect;
+    Connection connection = null;
 
-    public static Connection createConnection(String DB_URL, String USER, String PASS) {
+    public ConnectionController(Connect connect) {
+        this.connect = connect;
+    }
+
+    public Connection createConnection() {
 
         try{
-            Class.forName(JDBC_DRIVER);
-            connection = DriverManager.getConnection(DB_URL, USER, PASS);
+            Class.forName(connect.getDB_DRIVER());
+            connection = DriverManager.getConnection(connect.getURL(), connect.getUSER_NAME(), connect.getPASSWORD());
             return connection;
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -20,7 +26,7 @@ public class ConnectionController {
         return null;
     }
 
-    public static void closeConnection() {
+    public void closeConnection() {
         if (connection != null) {
             try{
                 connection.close();
