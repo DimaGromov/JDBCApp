@@ -6,6 +6,8 @@ public class Connect {
     private final String USER_NAME;
     private final String PASSWORD;
 
+
+
     public Connect(String DB_DRIVER, String URL, String USER_NAME, String PASSWORD) {
         this.DB_DRIVER = DB_DRIVER;
         this.URL = URL;
@@ -28,4 +30,5 @@ public class Connect {
     public String getPASSWORD() {
         return PASSWORD;
     }
+
 }

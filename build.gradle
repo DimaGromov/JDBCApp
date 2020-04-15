@@ -19,4 +19,12 @@ dependencies {
 
     // https://mvnrepository.com/artifact/postgresql/postgresql
     compile group: 'postgresql', name: 'postgresql', version: '9.0-801.jdbc4'
+
+    compile 'org.springframework:spring-context:4.0.5.RELEASE'
+
+    compile 'org.springframework:spring-core:4.0.5.RELEASE'
+
+    compile 'org.springframework:spring-beans:4.0.5.RELEASE'
+
+    compile 'org.springframework:spring-expression:4.0.5.RELEASE'
 }

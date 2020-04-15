@@ -1,15 +1,13 @@
 import connection.ConnectionController;
 import entity.Product;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class ProductService implements CRUD<Product> {
 
     private Connection connection;
     private Statement statement;
+    private PreparedStatement preparedStatement;
     private String tableName;
 
     ProductService(ConnectionController connectionController, String tableName) {
@@ -18,60 +16,75 @@ public class ProductService implements CRUD<Product> {
     }
 
     public void createTable() throws SQLException {
-        statement = connection.createStatement();
         String createTableComand = "CREATE TABLE " + tableName + " (" +
                 "   id  INT(10) NOT NULL AUTO_INCREMENT, " +
-                "   name    VARCHAR(10) NOT NULL, " +
+                "   name    VARCHAR(300) NOT NULL, " +
                 "   price   INT(10) NOT NULL, " +
                 "   count   DECIMAL(10, 2)  NOT NULL);";
 
-        statement.execute(createTableComand);
-        statement.close();
+        preparedStatement = connection.prepareStatement(createTableComand);
+        preparedStatement.execute();
+        preparedStatement.close();
     }
 
     @Override
     public int create(Product product) throws SQLException {
-        Statement statement = connection.createStatement();
-        String createComand = "INSERT INTO " + tableName + " (name, price, count) VALUES (\'" + product.getName() + "\', " + product.getPrice() + ", " + product.getCount() + ");";
-        int result = statement.executeUpdate(createComand);
+        String createComand = "INSERT INTO " + tableName + " (name, price, count) VALUES(?, ?, ?);";
+
+        preparedStatement = connection.prepareStatement(createComand);
+
+        preparedStatement.setString(1, product.getName());
+        preparedStatement.setDouble(2, product.getPrice());
+        preparedStatement.setInt(3, product.getCount());
+
+        int result = preparedStatement.executeUpdate();
+        preparedStatement.close();
         return result;
     }
 
     @Override
-    public int read() throws SQLException {
-        Statement statement = connection.createStatement();
+    public ResultSet read() throws SQLException {
         String readAllComand = "SELECT * FROM " + tableName + ";";
+        statement = connection.createStatement();
+
         ResultSet resultSet = statement.executeQuery(readAllComand);
 
-        int result = 0;
         while (resultSet.next()) {
             System.out.println("id = " + resultSet.getInt("id"));
             System.out.println("name = " + resultSet.getString("name"));
             System.out.println("price = " + resultSet.getDouble("price"));
             System.out.println("count = " + resultSet.getInt("count"));
-            result++;
         }
-        statement.close();
-        return result;
+        return resultSet;
     }
 
     @Override
     public int updateById(int id, Product product) throws SQLException {
-        Statement statement = connection.createStatement();
-        String updateByIdComand = "UPDATE " + tableName + " SET name = \'" + product.getName() + "\', " +
-                "price = " + product.getPrice() + ", count = " + product.getCount() + " WHERE id = " + id + ";";
+        String updateByIdComand = "UPDATE " + tableName + " SET name = ?, price = ?, count = ? WHERE id = ?;";
+        preparedStatement = connection.prepareStatement(updateByIdComand);
 
-        int result = statement.executeUpdate(updateByIdComand);
-        statement.close();
+
+        preparedStatement.setString(1, product.getName());
+        preparedStatement.setDouble(2,product.getPrice());
+        preparedStatement.setInt(3, product.getCount());
+        preparedStatement.setInt(4, id);
+
+
+        int result = preparedStatement.executeUpdate();
+        preparedStatement.close();
         return result;
     }
 
     @Override
     public int deleteById(int id) throws SQLException {
-        statement = connection.createStatement();
-        String deleteByIdComand = "DELETE FROM " + tableName + " WHERE id = " + id + ";";
-        int result = statement.executeUpdate(deleteByIdComand);
-        statement.close();
+
+        String deleteByIdComand = "DELETE FROM " + tableName + " WHERE id = ?;";
+        preparedStatement = connection.prepareStatement(deleteByIdComand);
+
+        preparedStatement.setInt(1, id);
+
+        int result = preparedStatement.executeUpdate();
+        preparedStatement.close();
         return result;
     }
 }
